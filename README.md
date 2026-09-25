@@ -84,3 +84,9 @@ frontend/
   src/context/        # auth/session state
 DESIGN.md
 ```
+# AgencyDesk
+
+**Demo video:** https://drive.google.com/file/d/1IU6_Eb-1-D4-zqB93zYlw3n7983NClS4/view?usp=sharing
+
+Multi-tenant client & project management platform for agency-client work.
+...
