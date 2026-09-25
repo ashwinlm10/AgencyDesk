@@ -20,8 +20,6 @@ export default function Login() {
       if (data.memberships.length === 1) {
         await selectAgency(data.identity_token, data.memberships[0].membership_id);
       } else {
-        // Multiple agencies for this email -- let them pick which context to
-        // operate in (this is the "one person, two agencies" flow).
         setIdentityToken(data.identity_token);
         setMemberships(data.memberships);
       }
@@ -41,16 +39,21 @@ export default function Login() {
 
   if (memberships) {
     return (
-      <div style={{ maxWidth: 400, margin: "80px auto", fontFamily: "sans-serif" }}>
-        <h2>Which agency?</h2>
-        <p>This account belongs to more than one agency — pick which one to sign into.</p>
+      <div className="page-narrow">
+        <h1>Which agency?</h1>
+        <p className="hint" style={{ marginTop: 0, marginBottom: 20 }}>
+          This account belongs to more than one agency — pick which one to sign into.
+        </p>
         {memberships.map((m) => (
           <button
             key={m.membership_id}
-            style={{ display: "block", width: "100%", padding: 12, marginBottom: 8 }}
+            className="agency-pick-btn"
             onClick={() => selectAgency(identityToken, m.membership_id)}
           >
-            {m.agency_name} — {m.role.replace("_", " ")}
+            <strong>{m.agency_name}</strong>
+            <div className="role-pill" style={{ display: "inline-block", marginTop: 6 }}>
+              {m.role.replace("_", " ")}
+            </div>
           </button>
         ))}
       </div>
@@ -58,23 +61,24 @@ export default function Login() {
   }
 
   return (
-    <div style={{ maxWidth: 400, margin: "80px auto", fontFamily: "sans-serif" }}>
-      <h1>AgencyDesk</h1>
-      <form onSubmit={handleLogin}>
+    <div className="page-narrow">
+      <h1 style={{ fontSize: 30, marginBottom: 28 }}>AgencyDesk</h1>
+      <form onSubmit={handleLogin} className="card">
         <input
-          style={{ display: "block", width: "100%", padding: 8, marginBottom: 8 }}
+          style={{ display: "block", width: "100%", marginBottom: 10 }}
           value={email} onChange={(e) => setEmail(e.target.value)} placeholder="email"
         />
         <input
-          style={{ display: "block", width: "100%", padding: 8, marginBottom: 8 }}
+          style={{ display: "block", width: "100%", marginBottom: 14 }}
           type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="password"
         />
-        <button style={{ padding: "8px 16px" }} type="submit">Log in</button>
+        <button className="btn-primary" style={{ width: "100%" }} type="submit">Log in</button>
       </form>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      <p style={{ fontSize: 12, color: "#666", marginTop: 20 }}>
-        Seeded accounts (password: password123): admin@pixelpine.com, member@pixelpine.com,
-        admin@mapledigital.com, shared@client.com (belongs to both agencies)
+      {error && <p className="error-text">{error}</p>}
+      <p className="hint">
+        Seeded accounts (password: password123)<br />
+        admin@pixelpine.com · member@pixelpine.com · admin@mapledigital.com<br />
+        shared@client.com (belongs to both agencies)
       </p>
     </div>
   );

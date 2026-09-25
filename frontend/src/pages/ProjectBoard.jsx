@@ -33,45 +33,49 @@ export default function ProjectBoard() {
   }
 
   return (
-    <div style={{ maxWidth: 900, margin: "40px auto", fontFamily: "sans-serif" }}>
-      <Link to="/projects">&larr; all projects</Link>
-      <h1>Board</h1>
+    <div className="page">
+      <Link className="back-link" to="/projects">&larr; all projects</Link>
+      <h1 style={{ margin: "10px 0 24px" }}>Board</h1>
 
       {dashboard && (
-        <div style={{ background: "#f4f4f4", padding: 12, marginBottom: 20, borderRadius: 6 }}>
-          <strong>Dashboard</strong>
-          <div>Tasks by status: {Object.entries(dashboard.task_counts_by_status).map(([s, c]) => `${s}: ${c}`).join("  ·  ") || "none"}</div>
-          {isStaff && <div>Total hours logged: {dashboard.total_hours}</div>}
+        <div className="dash-strip">
+          <div className="dash-stat">
+            <span className="dash-stat-label">By status</span>
+            <span className="dash-stat-value" style={{ fontSize: 14, fontWeight: 500 }}>
+              {Object.entries(dashboard.task_counts_by_status).map(([s, c]) => `${s.replace("_", " ")}: ${c}`).join("   ·   ") || "none"}
+            </span>
+          </div>
+          {isStaff && (
+            <div className="dash-stat">
+              <span className="dash-stat-label">Hours logged</span>
+              <span className="dash-stat-value">{dashboard.total_hours}</span>
+            </div>
+          )}
         </div>
       )}
 
       {isStaff && (
-        <form onSubmit={createTask} style={{ marginBottom: 20 }}>
-          <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="New task title" />
+        <form onSubmit={createTask} className="card form-row" style={{ marginBottom: 24 }}>
+          <input style={{ flex: 1 }} value={title} onChange={(e) => setTitle(e.target.value)} placeholder="New task title" />
           <select value={visibility} onChange={(e) => setVisibility(e.target.value)}>
             <option value="internal">internal</option>
             <option value="client_visible">client-visible</option>
           </select>
-          <button type="submit">Add task</button>
+          <button className="btn-primary" type="submit">Add task</button>
         </form>
       )}
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
+      <div className="board">
         {STATUSES.map((status) => (
-          <div key={status}>
-            <h4 style={{ textTransform: "capitalize" }}>{status.replace("_", " ")}</h4>
+          <div key={status} className="column">
+            <div className="column-title">{status.replace("_", " ")}</div>
             {tasks.filter((t) => t.status === status).map((t) => (
-              <Link
-                key={t.id}
-                to={`/projects/${projectId}/tasks/${t.id}`}
-                style={{
-                  display: "block", padding: 8, marginBottom: 8, background: "#fff",
-                  border: "1px solid #ddd", borderRadius: 4, textDecoration: "none", color: "#111",
-                }}
-              >
+              <Link key={t.id} to={`/projects/${projectId}/tasks/${t.id}`} className="task-card">
                 {t.title}
-                <div style={{ fontSize: 11, color: t.visibility === "internal" ? "#a33" : "#3a3" }}>
-                  {t.visibility === "internal" ? "internal" : "client-visible"}
+                <div>
+                  <span className={`tag ${t.visibility === "internal" ? "tag-internal" : "tag-visible"}`}>
+                    {t.visibility === "internal" ? "internal" : "client-visible"}
+                  </span>
                 </div>
               </Link>
             ))}

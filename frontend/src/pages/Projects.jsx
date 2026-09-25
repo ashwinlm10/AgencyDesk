@@ -40,41 +40,41 @@ export default function Projects() {
   }
 
   return (
-    <div style={{ maxWidth: 700, margin: "40px auto", fontFamily: "sans-serif" }}>
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
+    <div className="page">
+      <div className="topbar">
         <h1>{session.agency_name}</h1>
-        <div>
-          <span style={{ marginRight: 12, color: "#666" }}>{session.role.replace("_", " ")}</span>
-          <button onClick={logout}>Log out</button>
+        <div className="topbar-right">
+          <span className="role-pill">{session.role.replace("_", " ")}</span>
+          <button className="btn-ghost" onClick={logout}>Log out</button>
         </div>
       </div>
 
-      <h2>Projects</h2>
-      {projects.length === 0 && <p>No projects visible to you yet.</p>}
-      <ul>
+      <div className="section-heading" style={{ marginTop: 0 }}>Projects</div>
+      {projects.length === 0 && <p className="hint" style={{ marginTop: 0 }}>No projects visible to you yet.</p>}
+      <ul className="project-list">
         {projects.map((p) => (
           <li key={p.id}>
-            <Link to={`/projects/${p.id}`}>{p.name}</Link>
+            <Link className="project-row" to={`/projects/${p.id}`}>{p.name}</Link>
           </li>
         ))}
       </ul>
 
       {isStaff && (
         <>
-          <h3>New client</h3>
-          <form onSubmit={createClient} style={{ marginBottom: 20 }}>
-            <input value={newClientName} onChange={(e) => setNewClientName(e.target.value)} placeholder="Client name" />
-            <button type="submit">Add client</button>
+          <div className="section-heading">New client</div>
+          <form onSubmit={createClient} className="card form-row">
+            <input style={{ flex: 1 }} value={newClientName} onChange={(e) => setNewClientName(e.target.value)} placeholder="Client name" />
+            <button className="btn-primary" type="submit">Add client</button>
           </form>
 
-          <h3>New project</h3>
-          <form onSubmit={createProject}>
+          <div className="section-heading">New project</div>
+          <form onSubmit={createProject} className="card form-row">
             <select value={newClientId} onChange={(e) => setNewClientId(e.target.value)}>
-              <option value="">-- choose client --</option>
+              <option value="">— choose client —</option>
               {clients.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
-            <input value={newProjectName} onChange={(e) => setNewProjectName(e.target.value)} placeholder="Project name" />
-            <button type="submit">Create project</button>
+            <input style={{ flex: 1 }} value={newProjectName} onChange={(e) => setNewProjectName(e.target.value)} placeholder="Project name" />
+            <button className="btn-primary" type="submit">Create project</button>
           </form>
         </>
       )}

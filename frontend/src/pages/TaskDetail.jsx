@@ -74,63 +74,80 @@ export default function TaskDetail() {
   if (!task) return null;
 
   return (
-    <div style={{ maxWidth: 700, margin: "40px auto", fontFamily: "sans-serif" }}>
-      <Link to={`/projects/${projectId}`}>&larr; back to board</Link>
-      <h1>{task.title}</h1>
-      <p>{task.description}</p>
-      <p>
-        Status: <strong>{task.status}</strong>
+    <div className="page">
+      <Link className="back-link" to={`/projects/${projectId}`}>&larr; back to board</Link>
+      <h1 style={{ margin: "10px 0 6px" }}>{task.title}</h1>
+      {task.description && <p style={{ color: "var(--text-muted)" }}>{task.description}</p>}
+
+      <div className="card-flat" style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 14 }}>
+        <span style={{ color: "var(--text-muted)", fontSize: 13 }}>Status</span>
+        <strong style={{ textTransform: "capitalize" }}>{task.status.replace("_", " ")}</strong>
         {isStaff && (
-          <select value={task.status} onChange={(e) => updateStatus(e.target.value)} style={{ marginLeft: 8 }}>
-            {["todo", "in_progress", "review", "done"].map((s) => <option key={s} value={s}>{s}</option>)}
+          <select value={task.status} onChange={(e) => updateStatus(e.target.value)} style={{ marginLeft: "auto" }}>
+            {["todo", "in_progress", "review", "done"].map((s) => <option key={s} value={s}>{s.replace("_", " ")}</option>)}
           </select>
         )}
-      </p>
+      </div>
 
-      <h3>Comments</h3>
-      {comments.map((c) => (
-        <div key={c.id} style={{ borderBottom: "1px solid #eee", padding: "6px 0" }}>
-          <div style={{ fontSize: 11, color: c.visibility === "internal" ? "#a33" : "#3a3" }}>
-            {c.visibility === "internal" ? "internal" : "client-visible"}
+      <div className="section-heading">Comments</div>
+      <div className="card-flat">
+        {comments.length === 0 && <p style={{ color: "var(--text-faint)", margin: 0, fontSize: 13 }}>No comments yet.</p>}
+        {comments.map((c) => (
+          <div key={c.id} className="comment">
+            <span className={`tag ${c.visibility === "internal" ? "tag-internal" : "tag-visible"}`}>
+              {c.visibility === "internal" ? "internal" : "client-visible"}
+            </span>
+            <div className="comment-body">{c.body}</div>
           </div>
-          {c.body}
-        </div>
-      ))}
-      <form onSubmit={postComment} style={{ marginTop: 10 }}>
-        <input value={commentBody} onChange={(e) => setCommentBody(e.target.value)} placeholder="Write a comment" style={{ width: "60%" }} />
+        ))}
+      </div>
+      <form onSubmit={postComment} className="form-row" style={{ marginTop: 10 }}>
+        <input style={{ flex: 1 }} value={commentBody} onChange={(e) => setCommentBody(e.target.value)} placeholder="Write a comment" />
         {isStaff && (
           <select value={commentVisibility} onChange={(e) => setCommentVisibility(e.target.value)}>
             <option value="internal">internal</option>
             <option value="client_visible">client-visible</option>
           </select>
         )}
-        <button type="submit">Post</button>
+        <button className="btn-primary" type="submit">Post</button>
       </form>
 
       {isStaff && (
         <>
-          <h3>Time entries</h3>
-          {timeEntries.map((t) => <div key={t.id}>{t.duration_minutes} min — {t.entry_date}</div>)}
-          <form onSubmit={logTime}>
-            <input type="number" value={duration} onChange={(e) => setDuration(e.target.value)} style={{ width: 80 }} /> minutes
-            <button type="submit">Log time</button>
+          <div className="section-heading">Time entries</div>
+          <div className="card-flat">
+            {timeEntries.length === 0 && <p style={{ color: "var(--text-faint)", margin: 0, fontSize: 13 }}>No time logged yet.</p>}
+            {timeEntries.map((t) => (
+              <div key={t.id} className="comment" style={{ fontSize: 14 }}>{t.duration_minutes} min — {t.entry_date}</div>
+            ))}
+          </div>
+          <form onSubmit={logTime} className="form-row" style={{ marginTop: 10 }}>
+            <input type="number" value={duration} onChange={(e) => setDuration(e.target.value)} style={{ width: 90 }} />
+            <span style={{ alignSelf: "center", color: "var(--text-muted)", fontSize: 13 }}>minutes</span>
+            <button className="btn-primary" type="submit">Log time</button>
           </form>
         </>
       )}
 
-      <h3>Files</h3>
-      {files.map((f) => (
-        <div key={f.id} style={{ marginBottom: 6 }}>
-          {f.filename} — <em>{f.approval_status}</em>
-          {session.role === "client_user" && f.visibility === "client_visible" && (
-            <span style={{ marginLeft: 8 }}>
-              <button onClick={() => setApproval(f.id, "approved")}>Approve</button>{" "}
-              <button onClick={() => setApproval(f.id, "needs_changes")}>Needs changes</button>
+      <div className="section-heading">Files</div>
+      <div className="card-flat">
+        {files.length === 0 && <p style={{ color: "var(--text-faint)", margin: 0, fontSize: 13 }}>No files yet.</p>}
+        {files.map((f) => (
+          <div key={f.id} className="file-row">
+            <span>{f.filename}</span>
+            <span style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <span className="file-status">{f.approval_status.replace("_", " ")}</span>
+              {session.role === "client_user" && f.visibility === "client_visible" && (
+                <>
+                  <button className="btn-ghost" onClick={() => setApproval(f.id, "approved")}>Approve</button>
+                  <button className="btn-ghost" onClick={() => setApproval(f.id, "needs_changes")}>Needs changes</button>
+                </>
+              )}
             </span>
-          )}
-        </div>
-      ))}
-      {isStaff && <input type="file" onChange={uploadFile} />}
+          </div>
+        ))}
+      </div>
+      {isStaff && <input type="file" onChange={uploadFile} style={{ marginTop: 10 }} />}
     </div>
   );
 }
